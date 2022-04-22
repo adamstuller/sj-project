@@ -10,7 +10,7 @@
 ```xml
 <?xml version=2.3 ?>
 <hoco>
-Ahoj ako mas ? 
+Ahoj ako mas ?
 </hoco>
 ```
 
@@ -65,12 +65,12 @@ char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 
 ```
 
-1. 
+1.
 
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
-element -> emptyelemtag | starttag elementshit    
+element -> emptyelemtag | starttag elementshit
 elementshit -> words endtag | elements endtag
 starttag -> SIMPLE_START_TK name SIMPLE_CLOSE_TK
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
@@ -86,12 +86,12 @@ digit -> DIGIT_TK
 word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 
-2. 
+2.
 
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
-element -> emptyelemtag | starttag elementshit    
+element -> emptyelemtag | starttag elementshit
 elementshit -> words endtag | elements endtag
 starttag -> SIMPLE_START_TK name SIMPLE_CLOSE_TK
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
@@ -108,12 +108,12 @@ digit -> DIGIT_TK
 word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 
-3. 
+3.
 
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
-element -> emptyelemtag | starttag elementshit    
+element -> emptyelemtag | starttag elementshit
 elementshit -> words endtag | elements endtag
 starttag -> SIMPLE_START_TK name SIMPLE_CLOSE_TK
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
@@ -132,12 +132,12 @@ word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 
 
-4. 
+4.
 
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
-element -> emptyelemtag | starttag elementshit    
+element -> emptyelemtag | starttag elementshit
 elementshit -> words endtag | elements endtag
 starttag -> SIMPLE_START_TK name SIMPLE_CLOSE_TK
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
@@ -161,7 +161,7 @@ char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
-element -> emptyelemtag | starttag elementshit    
+element -> emptyelemtag | starttag elementshit
 elementshit -> words endtag | elements endtag
 starttag -> SIMPLE_START_TK name SIMPLE_CLOSE_TK
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
@@ -178,47 +178,48 @@ digit -> DIGIT_TK
 word -> char  wordshit
 wordshit -> word | 𝝴
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
- 
+
 6. dalsie upravy
  - vyhodili sme neterminaly, ktore idu do jedneho terminalu digit, letter...)
  -  vytiahli sme SIMPLE_START_TK pomocou elementshitshit
  - vyhodili sme uplne words neterminal
 
-xmldokument -> element 
+xmldokument -> element
             | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
 element -> SIMPLE_START_TK name elementshitshit
-elementshitshit ->  SLASHED_CLOSE_TK 
+elementshitshit ->  SLASHED_CLOSE_TK
             | SIMPLE_CLOSE_TK elementshit
 elementshit -> word endtag
             | elements endtag
 endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
-elements -> element 
+elements -> element
             | 𝝴
-name -> LETTER_TK namechars 
-            | UNDERSCORE_TK namechars 
+name -> LETTER_TK namechars
+            | UNDERSCORE_TK namechars
             | COLON_TK namechars
-namechars -> namechar namechars 
+namechars -> namechar namechars
             | 𝝴
-namechar -> LETTER_TK 
-            | DIGIT_TK 
-            | DOT_TK 
-            | UNDERSCORE_TK 
-            | DASH_TK 
+namechar -> LETTER_TK
+            | DIGIT_TK
+            | DOT_TK
+            | UNDERSCORE_TK
+            | DASH_TK
             | COLON_TK
 number -> DIGIT_TK numbershit
-numbershit -> number 
+numbershit -> number
             | 𝝴
 word -> char wordshit
-wordshit -> word 
+wordshit -> word
             | 𝝴
-char -> LETTER_TK 
-            | DIGIT_TK 
-            | UNDERSCORE_TK 
-            | COLON_TK 
+char -> LETTER_TK
+            | DIGIT_TK
+            | UNDERSCORE_TK
+            | COLON_TK
             | DASH_TK
 ```
+
 ## Uloha c.4
 
 ### FIRST1
@@ -271,14 +272,15 @@ F1(char) = { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... o
 ```
 
 ### FOLLOW1
+
 ```
 FO1(xmldokument) = { $ }
 FO1(xmldecl) = F1(element) - 𝝴 = { SIMPLE_START_TK }
 FO1(vernum) = { XML_CLOSE_TK }
-FO1(element) = FO1(xmldokument) U FO1(elements) = { $, SLASHED_START_TK } 
-FO1(elementshitshit) = FO1(element) = { $, SLASHED_START_TK } 
-FO1(elementshit) = FO1(elementshitshit) = { $, SLASHED_START_TK } 
-FO1(endtag) = FO1(elementshit) = { $, SLASHED_START_TK } 
+FO1(element) = FO1(xmldokument) U FO1(elements) = { $, SLASHED_START_TK }
+FO1(elementshitshit) = FO1(element) = { $, SLASHED_START_TK }
+FO1(elementshit) = FO1(elementshitshit) = { $, SLASHED_START_TK }
+FO1(endtag) = FO1(elementshit) = { $, SLASHED_START_TK }
 FO1(elements) = F1(endtag) - 𝝴 = { SLASHED_START_TK }
 FO1(name) = { SIMPLE_CLOSE_TK } U F1(elementshitshit) - 𝝴 = { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK }
 FO1(namechars) = FO1(name) = { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK }
@@ -291,43 +293,80 @@ FO1(char) = F1(wordshit) - 𝝴 U FO1(word) =  { SLASHED_START_TK, LETTER_TK, DI
 ```
 
 Je to LL!
+
 ## 5. Tabulka prechodov
 
 ```
-1. xmldokument -> element 
+1. xmldokument -> element
 2. xmldokument -> xmldecl element
 3. xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 4. vernumb -> number DOT_TK number
 5. element -> SIMPLE_START_TK name elementshitshit
-6. elementshitshit ->  SLASHED_CLOSE_TK 
+6. elementshitshit ->  SLASHED_CLOSE_TK
 7. elementshitshit ->  SIMPLE_CLOSE_TK elementshit
 8. elementshit -> word endtag
 9. elementshit -> elements endtag
 10. endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK
-11. elements -> element 
+11. elements -> element
 12. elements -> 𝝴
-13. name -> LETTER_TK namechars 
-14. name -> UNDERSCORE_TK namechars 
+13. name -> LETTER_TK namechars
+14. name -> UNDERSCORE_TK namechars
 15. name -> COLON_TK namechars
-16. namechars -> namechar namechars 
+16. namechars -> namechar namechars
 17. namechars -> 𝝴
-18. namechar -> LETTER_TK 
-19. namechar -> DIGIT_TK 
-20. namechar -> DOT_TK 
-21. namechar -> UNDERSCORE_TK 
-22. namechar -> DASH_TK 
+18. namechar -> LETTER_TK
+19. namechar -> DIGIT_TK
+20. namechar -> DOT_TK
+21. namechar -> UNDERSCORE_TK
+22. namechar -> DASH_TK
 23. namechar -> COLON_TK
 24. number -> DIGIT_TK numbershit
-25. numbershit -> number 
+25. numbershit -> number
 26. numbershit -> 𝝴
 27. word -> char wordshit
-28. wordshit -> word 
+28. wordshit -> word
 29. wordshit -> 𝝴
-30. char -> LETTER_TK 
-31. char -> DIGIT_TK 
-32. char -> UNDERSCORE_TK 
-33. char -> COLON_TK 
+30. char -> LETTER_TK
+31. char -> DIGIT_TK
+32. char -> UNDERSCORE_TK
+33. char -> COLON_TK
 34. char -> DASH_TK
 ```
 
+|                                                                                     | First                                                                                                             | Follow                                                                                                            |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| xmldokument -> element \| xmldecl element                                           | { XML_OPEN_TK, SIMPLE_START_TK }                                                                                  | { $ }                                                                                                             |
+| xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK                          | { XML_OPEN_TK }                                                                                                   | { SIMPLE_START_TK }                                                                                               |
+| vernumb -> number DOT_TK number                                                     | { DIGIT_TK }                                                                                                      | { XML_CLOSE_TK }                                                                                                  |
+| element -> SIMPLE_START_TK name elementshitshit                                     | { SIMPLE_START_TK }                                                                                               | { $, SLASHED_START_TK }                                                                                           |
+| elementshitshit -> SLASHED_CLOSE_TK \| SIMPLE_CLOSE_TK elementshit                  | { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK }                                                                             | { $, SLASHED_START_TK }                                                                                           |
+| elementshit -> word endtag \| elements endtag                                       | { SLASHED_START_TK, SIMPLE_START_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> } | { $, SLASHED_START_TK }                                                                                           |
+| endtag -> SLASHED_START_TK name SIMPLE_CLOSE_TK                                     | { SLASHED_START_TK }                                                                                              | { $, SLASHED_START_TK }                                                                                           |
+| elements -> element \| 𝝴                                                            | { SIMPLE_START_TK, 𝝴 }                                                                                            | { SLASHED_START_TK }                                                                                              |
+| name -> LETTER_TK namechars \| UNDERSCORE_TK namechars \| COLON_TK namechars        | { LETTER_TK, UNDERSCORE_TK, COLON_TK }                                                                            | { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK }                                                                             |
+| namechars -> namechar namechars \| 𝝴                                                | { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                 | { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK }                                                                             |
+| namechar -> LETTER_TK \| DIGIT_TK \| DOT_TK \| UNDERSCORE_TK \| DASH_TK \| COLON_TK | { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                    | { SLASHED_CLOSE_TK, SIMPLE_CLOSE_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> } |
+| number -> DIGIT_TK numbershit                                                       | { DIGIT_TK }                                                                                                      | { DOT_TK, XML_CLOSE_TK }                                                                                          |
+| numbershit -> number \| 𝝴                                                           | { DIGIT_TK, 𝝴 }                                                                                                   | { DOT_TK, XML_CLOSE_TK }                                                                                          |
+| word -> char wordshit                                                               | { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                    | { SLASHED_START_TK }                                                                                              |
+| wordshit -> word \| 𝝴                                                               | { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                 | { SLASHED_START_TK }                                                                                              |
+| char -> LETTER_TK \| DIGIT_TK \| UNDERSCORE_TK \| COLON_TK \| DASH_TK               | { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                    | { SLASHED_START_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                  |
 
+|                 | XML_OPEN_TK | XML_VERSION_TK | XML_CLOSE_TK | DOT_TK | SIMPLE_START_TK | SIMPLE_CLOSE_TK | SLASHED_START_TK | SLASHED_CLOSE_TK | UNDERSCORE_TK | COLON_TK | DASH_TK | LETTER_TK | DIGIT_TK | others |  $  |
+| :-------------- | :---------: | :------------: | :----------: | :----: | :-------------: | :-------------: | :--------------: | :--------------: | :-----------: | :------: | :-----: | :-------: | :------: | :----: | :-: |
+| xmldokument     |      2      |                |              |        |        1        |                 |                  |                  |               |          |         |           |          |        |     |
+| xmldecl         |      3      |                |              |        |                 |                 |                  |                  |               |          |         |           |          |        |     |
+| vernumb         |             |                |              |        |                 |                 |                  |                  |               |          |         |           |    4     |        |     |
+| element         |             |                |              |        |        5        |                 |                  |                  |               |          |         |           |          |        |     |
+| elementshitshit |             |                |              |        |                 |        7        |                  |        6         |               |          |         |           |          |        |     |
+| elementshit     |             |                |              |        |        9        |                 |        9         |                  |       8       |    8     |    8    |     8     |    8     |   8    |     |
+| endtag          |             |                |              |        |                 |                 |        10        |                  |               |          |         |           |          |        |     |
+| elements        |             |                |              |        |       11        |                 |        12        |                  |               |          |         |           |          |        |     |
+| name            |             |                |              |        |                 |                 |                  |                  |      14       |    15    |         |    13     |          |        |     |
+| namechars       |             |                |              |   16   |                 |       17        |                  |        17        |      16       |    16    |   16    |    16     |    16    |   16   |     |
+| namechar        |             |                |              |   20   |                 |                 |                  |                  |      21       |    23    |   22    |    18     |    19    |        |     |
+| number          |             |                |              |        |                 |                 |                  |                  |               |          |         |           |    24    |        |     |
+| numbershit      |             |                |      26      |   26   |                 |                 |                  |                  |               |          |         |           |    25    |        |     |
+| word            |             |                |              |        |                 |                 |                  |                  |      27       |    27    |   27    |    27     |    27    |   27   |     |
+| wordshit        |             |                |              |        |                 |                 |        29        |                  |      28       |    28    |   28    |    28     |    28    |   28   |     |
+| char            |             |                |              |        |                 |                 |                  |                  |      32       |    33    |   34    |    30     |    31    |        |     |
