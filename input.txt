@@ -2,10 +2,3 @@
 <hoco>
 Ahoj ako mas ?
 </hoco>
-<hoco>
-<inner_element>
-<simple_element/>
-</inner_element>
-</hoco>
-<?xml version=2.3?>
-<simple_element/>
