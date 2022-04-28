@@ -117,11 +117,13 @@ analyze input = case foldl go ([Right XmlDokument], []) input of
                   >>= (rules !?)
                   >>= snd
            in case maybeSymbols of
-                Just symbols -> (symbols ++ xs, logs)
+                Just symbols ->
+                  let newStack = symbols ++ xs
+                   in (newStack, logs ++ ["Unfolded non terminal " <> show nonterminal <> " to " <> show symbols <> ". Current stack: " <> show newStack])
                 _ -> error "No matching rules for nonterminal"
         ((Left t) : xs) ->
           if t == terminal
-            then (xs, ["Removed terminal " <> show t <> "from stack "])
+            then (xs, logs ++ ["Removed terminal " <> show t <> "from stack. Current stack: " <> show xs])
             else error "Wrong terminal on input"
         [] -> error "Empty stack before eof"
 

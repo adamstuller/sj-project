@@ -33,6 +33,6 @@ data Nonterminal
   | Word
   | WordShit
   | Char
-  deriving Eq
+  deriving (Show, Eq)
 
 type Symbol = Either Terminal Nonterminal
