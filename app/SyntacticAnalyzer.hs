@@ -121,7 +121,8 @@ analyze input = case foldl go ([Right XmlDokument], []) input of
                 Just symbols ->
                   let newStack = symbols ++ xs
                    in go (newStack, logs ++ ["Unfolded non terminal " <> show nonterminal <> " to " <> show symbols <> ". Current stack: " <> show newStack]) terminal
-                _ -> error "No matching rules for nonterminal"
+                Nothing ->
+                  go (xs, logs ++ ["Popped from stack because of empy symbol"]) terminal
         ((Left t) : xs) ->
           if t == terminal
             then (xs, logs ++ ["Removed terminal " <> show t <> "from stack. Current stack: " <> show xs])

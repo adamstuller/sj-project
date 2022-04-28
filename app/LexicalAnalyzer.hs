@@ -15,6 +15,7 @@ mapping =
       (".", DotTk),
       ("<", SimpleStartTk),
       (">", SimpleCloseTk),
+      ("/>", SlashedCloseTk),
       ("</", SlashedStartTk),
       ("_", UnderscoreTk),
       (":", ColonTk),
