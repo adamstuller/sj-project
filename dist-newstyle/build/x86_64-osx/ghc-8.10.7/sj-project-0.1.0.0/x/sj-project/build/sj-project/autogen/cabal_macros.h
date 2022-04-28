@@ -30,6 +30,16 @@
   (major1) == 0 && (major2) <  6 || \
   (major1) == 0 && (major2) == 6 && (minor) <= 5)
 #endif /* MIN_VERSION_containers */
+/* package extra-1.7.10 */
+#ifndef VERSION_extra
+#define VERSION_extra "1.7.10"
+#endif /* VERSION_extra */
+#ifndef MIN_VERSION_extra
+#define MIN_VERSION_extra(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  7 || \
+  (major1) == 1 && (major2) == 7 && (minor) <= 10)
+#endif /* MIN_VERSION_extra */
 
 /* tool gcc-13.1.6 */
 #ifndef TOOL_VERSION_gcc

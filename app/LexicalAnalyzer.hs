@@ -1,31 +1,16 @@
 module LexicalAnalyzer where
 
+import Common
 import Data.List
 import qualified Data.Map.Strict as Map
 import Data.Maybe
 import Debug.Trace (trace)
 
-data Token
-  = XmlOpenTk
-  | XmlVersionTk
-  | XmlCloseTk
-  | DotTk
-  | SimpleStartTk
-  | SimpleCloseTk
-  | SlashedStartTk
-  | SlashedCloseTk
-  | UnderscoreTk
-  | ColonTk
-  | DashTk
-  | LetterTk
-  | DigitTk
-  deriving (Show)
-
-mapping :: Map.Map String Token
+mapping :: Map.Map String Terminal
 mapping =
   Map.fromList $
     [ ("<?xml", XmlOpenTk),
-      ("version =", XmlVersionTk),
+      ("version=", XmlVersionTk),
       ("?>", XmlCloseTk),
       (".", DotTk),
       ("<", SimpleStartTk),
@@ -39,16 +24,16 @@ mapping =
       ++ [([c], LetterTk) | c <- ['A' .. 'Z']]
       ++ [(show d, DigitTk) | d <- [0 .. 9]]
 
-findKeysForInput :: String -> [(String, Token)]
+findKeysForInput :: String -> [(String, Terminal)]
 findKeysForInput input = filter (\(key, _) -> isJust $ stripPrefix input key) (Map.toList mapping)
 
-inputContainsToken :: String -> Token -> Bool
+inputContainsToken :: String -> Terminal -> Bool
 inputContainsToken input token = undefined
 
-analyze :: String -> [Token]
+analyze :: String -> [Terminal]
 analyze input = fst $ foldl go ([], "") input
   where
-    go :: ([Token], String) -> Char -> ([Token], String)
+    go :: ([Terminal], String) -> Char -> ([Terminal], String)
     go (tokens, acc) a =
       let newAcc = acc ++ [a]
        in case findKeysForInput newAcc of
@@ -58,7 +43,7 @@ analyze input = fst $ foldl go ([], "") input
                   (suffixTokens, suffixSuffix) = go ([], "") accSufix
                in case Map.lookup accPrefix mapping of
                     Just token -> (tokens ++ [token] ++ suffixTokens, suffixSuffix)
-                    Nothing -> (tokens, drop 1 newAcc) -- Dropping in case no match in tokens
+                    Nothing -> (tokens, drop 1 newAcc) -- Dropping in case no match in tokens = optimisation
             [(key, token)] -> case stripPrefix key newAcc of
               Nothing -> (tokens, newAcc)
               Just s -> (tokens ++ [token], s)
