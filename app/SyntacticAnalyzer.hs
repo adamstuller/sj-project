@@ -5,6 +5,7 @@ module SyntacticAnalyzer where
 import Common
 import Data.List
 import Data.List.Extra ((!?))
+import Debug.Trace (trace)
 
 rules :: [(Nonterminal, Maybe [Symbol])]
 rules =
@@ -109,17 +110,17 @@ analyze input = case foldl go ([Right XmlDokument], []) input of
   where
     go :: ([Symbol], [String]) -> Terminal -> ([Symbol], [String])
     go (stack, logs) terminal =
-      case stack of
+      case (trace (show stack)) (trace (show terminal)) stack of
         ((Right nonterminal) : xs) ->
           let maybeSymbols =
                 find (matchRule nonterminal terminal) table
                   >>= (\(_, _, idx) -> pure idx)
-                  >>= (rules !?)
+                  >>= (\idx -> rules !? (idx - 1))
                   >>= snd
            in case maybeSymbols of
                 Just symbols ->
                   let newStack = symbols ++ xs
-                   in (newStack, logs ++ ["Unfolded non terminal " <> show nonterminal <> " to " <> show symbols <> ". Current stack: " <> show newStack])
+                   in go (newStack, logs ++ ["Unfolded non terminal " <> show nonterminal <> " to " <> show symbols <> ". Current stack: " <> show newStack]) terminal
                 _ -> error "No matching rules for nonterminal"
         ((Left t) : xs) ->
           if t == terminal
