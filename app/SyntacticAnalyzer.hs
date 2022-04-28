@@ -115,11 +115,11 @@ analyze input = case foldl go ([], []) input of
     go (stack, logs) terminal =
       case stack of
         ((Right nonterminal) : xs) ->
-          let maybeSymbols = case find (matchRule nonterminal terminal) table
-                >>= (\(_, _, idx) -> pure idx)
-                >>= (rules !?) of
-                Just (_, Just symbols) -> Just symbols
-                _ -> Nothing
+          let maybeSymbols =
+                find (matchRule nonterminal terminal) table
+                  >>= (\(_, _, idx) -> pure idx)
+                  >>= (rules !?)
+                  >>= snd
            in case maybeSymbols of
                 Just symbols -> (symbols ++ xs, logs)
                 _ -> error "No matching rules for nonterminal"
