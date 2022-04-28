@@ -102,12 +102,8 @@ table =
     (Char, DashTk, 34)
   ]
 
-matchRule :: Nonterminal -> Terminal -> (Nonterminal, Terminal, Int) -> Bool
-matchRule n1 t1 (n2, t2, _) =
-  n1 == n2 && t1 == t2
-
 analyze :: [Terminal] -> (Bool, [String])
-analyze input = case foldl go ([], []) input of
+analyze input = case foldl go ([Right XmlDokument], []) input of
   ([], ss) -> (True, ss)
   (_, ss) -> (False, ss)
   where
@@ -128,3 +124,7 @@ analyze input = case foldl go ([], []) input of
             then (xs, ["Removed terminal " <> show t <> "from stack "])
             else error "Wrong terminal on input"
         [] -> error "Empty stack before eof"
+
+    matchRule :: Nonterminal -> Terminal -> (Nonterminal, Terminal, Int) -> Bool
+    matchRule n1 t1 (n2, t2, _) =
+      n1 == n2 && t1 == t2
