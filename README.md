@@ -1,6 +1,18 @@
-# Zadanie sj
+# Zadanie sj - LittleXML
 
-## Uloha 1
+Pre spustenie projektu treba pustit prikaz: 
+
+```sh
+cabal run
+```
+
+___treba mat pravdaze nainstalovany Haskell a Cabal a potrebne dependencie alebo otvorit projekt v devcontaineri.___
+
+Vstupny subor je input.txt 
+
+## Uloha 1 - priklady jazyka
+
+Vytvorili sme tieto 3 priklady LittleXML validnych dokumentov: 
 
 ```xml
 <?xml version=2.3 ?>
@@ -24,6 +36,8 @@ Ahoj ako mas ?
 
 ## Uloha 2
 
+Terminaly sme nahradili tymito tokenmi: 
+
 ```
 " <?xml" = XML_OPEN_TK
 "version =" = XML_VERSION_TK
@@ -38,8 +52,11 @@ Ahoj ako mas ?
 "-" = DASH_TK
 A-Za-z = LETTER_TK
 0-9 = DIGIT_TK
+```
 
+Vysledna gramatika pred prevedenim do LL1 je takato: 
 
+```
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -59,14 +76,11 @@ word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
 ```
 
-## Uloha 3
+## Uloha 3 - transformacia na LL1
 
-### Lava faktorizacia
+1. krok lavej faktorizacie
 
 ```
-
-1.
-
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -85,9 +99,11 @@ number -> digit | digit number <-- lavy faktor: digit
 digit -> DIGIT_TK
 word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
+```
 
-2.
+2. krok lavej faktorizacie
 
+```
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -107,9 +123,11 @@ number -> digit | digit number <-- lavy faktor: digit
 digit -> DIGIT_TK
 word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
+```
 
-3.
+3. krok lavej faktorizacie
 
+```
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -130,10 +148,11 @@ numbershit -> number | 𝝴
 digit -> DIGIT_TK
 word -> char | char word <-- lavy faktor char
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
+```
 
+4. krok lavej faktorizacie
 
-4.
-
+```
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -155,9 +174,12 @@ digit -> DIGIT_TK
 word -> char  wordshit
 wordshit -> word | 𝝴
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
+```
 
-5.  -vyhodenie nemashit
 
+5. Vyhodenie zbytocneho pravidla nameshit
+
+```
 xmldokument -> element | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
 vernumb -> number DOT_TK number
@@ -178,12 +200,16 @@ digit -> DIGIT_TK
 word -> char  wordshit
 wordshit -> word | 𝝴
 char -> letter | digit | UNDERSCORE_TK | COLON_TK | DASH_TK ... (okrem <>)
+```
 
 6. dalsie upravy
  - vyhodili sme neterminaly, ktore idu do jedneho terminalu digit, letter...)
- -  vytiahli sme SIMPLE_START_TK pomocou elementshitshit
+ - vytiahli sme SIMPLE_START_TK pomocou elementshitshit
  - vyhodili sme uplne words neterminal
 
+### Vysledna LL1 gramatika
+
+```
 xmldokument -> element
             | xmldecl element
 xmldecl -> XML_OPEN_TK XML_VERSION_TK vernumb XML_CLOSE_TK
@@ -225,32 +251,6 @@ char -> LETTER_TK
 ### FIRST1
 
 ```
-
-povodny f1
-F1(xmldokument) = F1(element) - 𝝴 U F1(xmldecl) - 𝝴 = { SIMPLE_START_TK, XML_OPEN_TK }
-F1(xmldecl) = { XML_OPEN_TK }
-F1(vernumb) = F1(number) - 𝝴 = F1(digit) - 𝝴 = { DIGIT_TK }
-F1(element) = F1(emptyelemtag) - 𝝴 U F1(starttag) - 𝝴 = {  SIMPLE_START_TK }
-F1(elementshit) = F1(words) - 𝝴 U F1(elements) - 𝝴 U F1(endtag) = { SIMPLE_START_TK, SLASHED_START_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-F1(starttag) = { SIMPLE_START_TK }
-F1(endtag) = { SLASHED_START_TK }
-F1(words) = F1(word) - 𝝴 U { 𝝴 } = { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-F1(elements) = F1(element) - 𝝴 U { 𝝴 } = { SIMPLE_START_TK, 𝝴 }
-F1(emptyelemtag) = { SIMPLE_START_TK }
-F1(name) = F1(letter) - 𝝴 U { UNDERSCORE_TK, COLON_TK } = { LETTER_TK, UNDERSCORE_TK, COLON_TK }
-F1(nameshit) = F1(namechars) - 𝝴 U { 𝝴 } = { DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK} = {LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK, 𝝴 }
-F1(namechars) = F1(namechar) - 𝝴 U { 𝝴 } = { DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK} = {LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK, 𝝴 }
-F1(namechar) = F1(letter) - 𝝴 U F1(digit) - 𝝴 U { DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK} = {LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK}
-F1(letter) = { LETTER_TK }
-F1(number) = F1(digit) - 𝝴 = { DIGIT_TK }
-F1(numbershit) = F1(number) - 𝝴 U { 𝝴 }  = { DIGIT_TK, 𝝴 }
-F1(digit) = { DIGIT_TK }
-F1(word) = F1(char) - 𝝴 = { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-F1(wordshit) = F1(word) - 𝝴 U { 𝝴 }  = { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-F1(char) = F1(letter) - 𝝴 U F1(digit) - 𝝴 U { DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <>}  = { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-
-f1 po uprave (the true wan)
-
 F1(xmldokument) = F1(element) -  𝝴  U F1(xmldecl) - 𝝴 = { XML_OPEN_TK, SIMPLE_START_TK }
 F1(xmldecl) =  { XML_OPEN_TK }
 F1(vernumb) = F1(number) - 𝝴  = { DIGIT_TK }
@@ -267,8 +267,6 @@ F1(numbershit) = F1(number) - 𝝴 U { 𝝴 }  = { DIGIT_TK, 𝝴 }
 F1(word) = F1(char) - 𝝴 = { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
 F1(wordshit) = F1(word) U { 𝝴 } = { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
 F1(char) = { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
-
-
 ```
 
 ### FOLLOW1
@@ -292,9 +290,11 @@ FO1(wordshit) = FO1(word) = { SLASHED_START_TK }
 FO1(char) = F1(wordshit) - 𝝴 U FO1(word) =  { SLASHED_START_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }
 ```
 
-Je to LL!
+Je to LL1! 
 
 ## 5. Tabulka prechodov
+
+Ocislovane pravidla: 
 
 ```
 1. xmldokument -> element
@@ -352,6 +352,9 @@ Je to LL!
 | wordshit -> word \| 𝝴                                                               | { 𝝴, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                 | { SLASHED_START_TK }                                                                                              |
 | char -> LETTER_TK \| DIGIT_TK \| UNDERSCORE_TK \| COLON_TK \| DASH_TK               | { LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                                    | { SLASHED_START_TK, LETTER_TK, DIGIT_TK, DOT_TK, UNDERSCORE_TK, DASH_TK, COLON_TK ... okrem <> }                  |
 
+
+### Tabulka prechodov
+
 |                 | XML_OPEN_TK | XML_VERSION_TK | XML_CLOSE_TK | DOT_TK | SIMPLE_START_TK | SIMPLE_CLOSE_TK | SLASHED_START_TK | SLASHED_CLOSE_TK | UNDERSCORE_TK | COLON_TK | DASH_TK | LETTER_TK | DIGIT_TK | others |  $  |
 | :-------------- | :---------: | :------------: | :----------: | :----: | :-------------: | :-------------: | :--------------: | :--------------: | :-----------: | :------: | :-----: | :-------: | :------: | :----: | :-: |
 | xmldokument     |      2      |                |              |        |        1        |                 |                  |                  |               |          |         |           |          |        |     |
@@ -370,3 +373,16 @@ Je to LL!
 | word            |             |                |              |        |                 |                 |                  |                  |      27       |    27    |   27    |    27     |    27    |   27   |     |
 | wordshit        |             |                |              |        |                 |                 |        29        |                  |      28       |    28    |   28    |    28     |    28    |   28   |     |
 | char            |             |                |              |        |                 |                 |                  |                  |      32       |    33    |   34    |    30     |    31    |        |     |
+
+
+## 6. Lexikalny analyzator
+
+Nachadza sa v subore `LexicalAnalyzer.hs`. Analyza sa vykonava pomocou funkcie `analyze`. Vstup je retazec a vystup je zoznam tokenov.
+
+Implementovali sme zotavenie z chyby: ignorujeme retazce na vstupe az kym nenajdeme jeden z ocakavanych retazcov - nachadza sa na 
+
+## 7. Syntakticky analyzator
+
+Nachadza sa v subore `SyntacticAnalyzer.hs` - funkcia `analyze`. Vstup je zoznam tokenov a vystupom je dvojica bolean urcujuci vysledok a zoznam logov. 
+
+Implementovali sme zotavenie z chyby - funkcia `panicModeRecovery`. Vyuzili sme ju na riadkoch 120 a 131. 
