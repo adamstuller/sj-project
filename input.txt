@@ -1,4 +1,4 @@
-<?xml version=2.3 ?>
+<?xml .version=2.3 ?>
 <hoco>
 Ahoj ako mas ?
 </hoco>

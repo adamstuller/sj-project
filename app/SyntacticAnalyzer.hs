@@ -5,7 +5,7 @@ module SyntacticAnalyzer where
 import Common
 import Data.List
 import Data.List.Extra ((!?))
-import Debug.Trace (trace)
+import Data.Maybe (fromJust)
 
 rules :: [(Nonterminal, Maybe [Symbol])]
 rules =
@@ -110,24 +110,32 @@ analyze input = case foldl go ([Right XmlDokument], []) input of
   where
     go :: ([Symbol], [String]) -> Terminal -> ([Symbol], [String])
     go (stack, logs) terminal =
-      case (trace (show stack)) (trace (show terminal)) stack of
+      case stack of
         ((Right nonterminal) : xs) ->
           let maybeSymbols =
                 find (matchRule nonterminal terminal) table
                   >>= (\(_, _, idx) -> pure idx)
-                  >>= (\idx -> rules !? (idx - 1))
-                  >>= snd
+                  >>= (\idx -> rules !? (idx - 1) >>= (\x -> pure (idx, snd x)))
            in case maybeSymbols of
-                Just symbols ->
-                  let newStack = symbols ++ xs
-                   in go (newStack, logs ++ ["Unfolded non terminal " <> show nonterminal <> " to " <> show symbols <> ". Current stack: " <> show newStack]) terminal
-                Nothing ->
-                  go (xs, logs ++ ["Popped from stack because of empy symbol"]) terminal
+                Nothing -> panicModeRecovery stack logs terminal
+                Just (idx, s) ->
+                  case s of
+                    Just symbols ->
+                      let newStack = symbols ++ xs
+                       in go (newStack, logs ++ [logMsg ("App rule " <> show idx <> "...") stack terminal]) terminal
+                    Nothing ->
+                      go (xs, logs ++ [logMsg "Popping...... " stack terminal]) terminal
         ((Left t) : xs) ->
           if t == terminal
-            then (xs, logs ++ ["Removed terminal " <> show t <> "from stack. Current stack: " <> show xs])
-            else error "Wrong terminal on input"
+            then (xs, logs ++ [logMsg "Popping...... " stack terminal])
+            else panicModeRecovery stack logs terminal
         [] -> error "Empty stack before eof"
+
+    panicModeRecovery :: [Symbol] -> [String] -> Terminal -> ([Symbol], [String])
+    panicModeRecovery stack logs input = (stack, logs ++ [logMsg "Skip input..." stack input])
+
+    logMsg :: String -> [Symbol] -> Terminal -> String
+    logMsg action stack terminal = action <> " \t\tStack: " <> show stack <> ", Input: " <> show terminal
 
     matchRule :: Nonterminal -> Terminal -> (Nonterminal, Terminal, Int) -> Bool
     matchRule n1 t1 (n2, t2, _) =
